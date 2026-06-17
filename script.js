@@ -4,6 +4,8 @@ const phoneticTime = document.getElementById("phoneticTime");
 const timeButton = document.getElementById("timeButton");
 const speakBtn = document.getElementById("speakBtn");
 
+let availableVoices = [];
+
 function pad(n) {
   return String(n).padStart(2, "0");
 }
@@ -106,21 +108,8 @@ function thaiHourText(hour) {
 
 function buildSpokenThai(hour, minute) {
   const [thaiHour] = thaiHourText(hour);
-
-  if (minute === 0) {
-    return thaiHour;
-  }
-
-  if (minute === 30) {
-    if (hour >= 1 && hour <= 11) return `${thaiHour} ครึ่ง`;
-    if (hour === 12) return `เที่ยงครึ่ง`;
-    return `${thaiHour} ครึ่ง`;
-  }
-
-  if (minute === 15) {
-    return `${thaiHour} สิบห้านาที`;
-  }
-
+  if (minute === 0) return thaiHour;
+  if (minute === 30) return `${thaiHour} ครึ่ง`;
   return `${thaiHour} ${thaiNumberText(minute)}นาที`;
 }
 
@@ -139,6 +128,11 @@ function updateClock() {
   phoneticTime.textContent = `${phoneticHour}${minutePhonetic}`.trim();
 }
 
+function refreshVoices() {
+  if (!("speechSynthesis" in window)) return;
+  availableVoices = window.speechSynthesis.getVoices();
+}
+
 function speakThai() {
   if (!("speechSynthesis" in window)) return;
 
@@ -147,18 +141,27 @@ function speakThai() {
   const m = now.getMinutes();
   const text = buildSpokenThai(h, m);
 
+  if (!text) return;
+
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "th-TH";
-  utterance.rate = 1;
+  utterance.rate = 0.95;
   utterance.pitch = 1;
 
-  const voices = window.speechSynthesis.getVoices();
-  const thaiVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("th"));
+  const thaiVoice =
+    availableVoices.find(v => v.lang && v.lang.toLowerCase().startsWith("th")) ||
+    availableVoices.find(v => v.lang && v.lang.toLowerCase().includes("th")) ||
+    null;
+
   if (thaiVoice) {
     utterance.voice = thaiVoice;
   }
+
+  utterance.onerror = () => {
+    console.log("Speech error");
+  };
 
   window.speechSynthesis.speak(utterance);
 }
@@ -166,9 +169,10 @@ function speakThai() {
 timeButton.addEventListener("click", speakThai);
 speakBtn.addEventListener("click", speakThai);
 
+refreshVoices();
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+}
+
 updateClock();
 setInterval(updateClock, 1000);
-
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.onvoiceschanged = updateClock;
-}
