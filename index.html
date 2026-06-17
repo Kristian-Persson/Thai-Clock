@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thai Time Clock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="badge">Thai time learner</div>
+      <h1>Klocka på svenska och thai</h1>
+      <p>Klicka på tiden för att höra den uppläst på thai.</p>
+    </header>
+
+    <section class="clock-card">
+      <button id="timeButton" class="time-button" type="button" aria-label="Spela upp tiden på thai">
+        <div id="digitalTime" class="digital-time">00:00</div>
+        <div id="thaiTime" class="thai-time">ศูนย์โมง</div>
+        <div id="phoneticTime" class="phonetic-time">soon mong</div>
+      </button>
+
+      <div class="controls">
+        <button id="speakBtn" type="button">Spela upp thai</button>
+      </div>
+    </section>
+
+    <section class="cards">
+      <article class="info-card">
+        <h2>Hur det fungerar</h2>
+        <p>Visar 24-timmars tid, översätter till vardaglig thai och läser upp med talsyntes.</p>
+      </article>
+
+      <article class="info-card">
+        <h2>Tidgrupper</h2>
+        <p>ตี, โมงเช้า, บ่าย, เย็น och ทุ่ม används beroende på timme.</p>
+      </article>
+    </section>
+
+    <section class="groups">
+      <h2>De fyra tidsgrupperna</h2>
+
+      <div class="group-grid">
+        <article class="group-card">
+          <h3>ตี</h3>
+          <p>01:00–05:59</p>
+          <ul>
+            <li>01:00 — ตีหนึ่ง — ti nueng</li>
+            <li>02:00 — ตีสอง — ti song</li>
+            <li>03:00 — ตีสาม — ti sam</li>
+            <li>04:00 — ตีสี่ — ti si</li>
+            <li>05:00 — ตีห้า — ti ha</li>
+          </ul>
+        </article>
+
+        <article class="group-card">
+          <h3>โมงเช้า</h3>
+          <p>06:00–11:59</p>
+          <ul>
+            <li>06:00 — หกโมงเช้า — hok mong chao</li>
+            <li>07:00 — เจ็ดโมงเช้า — jet mong chao</li>
+            <li>08:00 — แปดโมงเช้า — paet mong chao</li>
+            <li>09:00 — เก้าโมงเช้า — kao mong chao</li>
+            <li>10:00 — สิบโมงเช้า — sip mong chao</li>
+            <li>11:00 — สิบเอ็ดโมงเช้า — sip-et mong chao</li>
+          </ul>
+        </article>
+
+        <article class="group-card">
+          <h3>บ่าย / เย็น</h3>
+          <p>13:00–18:59</p>
+          <ul>
+            <li>13:00 — บ่ายโมง — bai mong</li>
+            <li>14:00 — บ่ายสองโมง — bai song mong</li>
+            <li>15:00 — บ่ายสามโมง — bai sam mong</li>
+            <li>16:00 — สี่โมงเย็น — si mong yen</li>
+            <li>17:00 — ห้าโมงเย็น — ha mong yen</li>
+            <li>18:00 — หกโมงเย็น — hok mong yen</li>
+          </ul>
+        </article>
+
+        <article class="group-card">
+          <h3>ทุ่ม</h3>
+          <p>19:00–23:59</p>
+          <ul>
+            <li>19:00 — หนึ่งทุ่ม — nueng thum</li>
+            <li>20:00 — สองทุ่ม — song thum</li>
+            <li>21:00 — สามทุ่ม — sam thum</li>
+            <li>22:00 — สี่ทุ่ม — si thum</li>
+            <li>23:00 — ห้าทุ่ม — ha thum</li>
+          </ul>
+        </article>
+      </div>
+
+      <p class="note">00:00 = เที่ยงคืน, 12:00 = เที่ยง</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
