@@ -76,103 +76,13 @@ function thaiNumberText(n) {
   return map[n] || String(n);
 }
 
-function thaiHourText(hour) {
+function thaiPhoneticNumber(n) {
   const map = {
-    0: ["เที่ยงคืน", "thiang khuen"],
-    1: ["ตีหนึ่ง", "ti nueng"],
-    2: ["ตีสอง", "ti song"],
-    3: ["ตีสาม", "ti sam"],
-    4: ["ตีสี่", "ti si"],
-    5: ["ตีห้า", "ti ha"],
-    6: ["หกโมงเช้า", "hok mong chao"],
-    7: ["เจ็ดโมงเช้า", "jet mong chao"],
-    8: ["แปดโมงเช้า", "paet mong chao"],
-    9: ["เก้าโมงเช้า", "kao mong chao"],
-    10: ["สิบโมงเช้า", "sip mong chao"],
-    11: ["สิบเอ็ดโมงเช้า", "sip-et mong chao"],
-    12: ["เที่ยง", "thiang"],
-    13: ["บ่ายโมง", "bai mong"],
-    14: ["บ่ายสองโมง", "bai song mong"],
-    15: ["บ่ายสามโมง", "bai sam mong"],
-    16: ["สี่โมงเย็น", "si mong yen"],
-    17: ["ห้าโมงเย็น", "ha mong yen"],
-    18: ["หกโมงเย็น", "hok mong yen"],
-    19: ["หนึ่งทุ่ม", "nueng thum"],
-    20: ["สองทุ่ม", "song thum"],
-    21: ["สามทุ่ม", "sam thum"],
-    22: ["สี่ทุ่ม", "si thum"],
-    23: ["ห้าทุ่ม", "ha thum"]
-  };
-  return map[hour] || ["", ""];
-}
-
-function buildSpokenThai(hour, minute) {
-  const [thaiHour] = thaiHourText(hour);
-  if (minute === 0) return thaiHour;
-  if (minute === 30) return `${thaiHour} ครึ่ง`;
-  return `${thaiHour} ${thaiNumberText(minute)}นาที`;
-}
-
-function updateClock() {
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-
-  digitalTime.textContent = `${pad(h)}:${pad(m)}`;
-
-  const [thaiHour, phoneticHour] = thaiHourText(h);
-  const minuteThai = m === 0 ? "" : ` ${thaiNumberText(m)}นาที`;
-  const minutePhonetic = m === 0 ? "" : ` ${m} naathi`;
-
-  thaiTime.textContent = `${thaiHour}${minuteThai}`.trim();
-  phoneticTime.textContent = `${phoneticHour}${minutePhonetic}`.trim();
-}
-
-function refreshVoices() {
-  if (!("speechSynthesis" in window)) return;
-  availableVoices = window.speechSynthesis.getVoices();
-}
-
-function speakThai() {
-  if (!("speechSynthesis" in window)) return;
-
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const text = buildSpokenThai(h, m);
-
-  if (!text) return;
-
-  window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "th-TH";
-  utterance.rate = 0.95;
-  utterance.pitch = 1;
-
-  const thaiVoice =
-    availableVoices.find(v => v.lang && v.lang.toLowerCase().startsWith("th")) ||
-    availableVoices.find(v => v.lang && v.lang.toLowerCase().includes("th")) ||
-    null;
-
-  if (thaiVoice) {
-    utterance.voice = thaiVoice;
-  }
-
-  utterance.onerror = () => {
-    console.log("Speech error");
-  };
-
-  window.speechSynthesis.speak(utterance);
-}
-
-timeButton.addEventListener("click", speakThai);
-speakBtn.addEventListener("click", speakThai);
-
-refreshVoices();
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
-}
-
-updateClock();
-setInterval(updateClock, 1000);
+    0: "soon",
+    1: "neung",
+    2: "song",
+    3: "sam",
+    4: "si",
+    5: "ha",
+    6: "hok",
+    7: 
