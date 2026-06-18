@@ -168,7 +168,7 @@ function thaiHourText(hour) {
     21: ["สามทุ่ม", "sam thum"],
     22: ["สี่ทุ่ม", "si thum"],
     23: ["ห้าทุ่ม", "ha thum"]
-  };
+};
   return map[hour] || ["", ""];
 }
 
@@ -199,6 +199,15 @@ function refreshVoices() {
   availableVoices = window.speechSynthesis.getVoices();
 }
 
+function getThaiVoice() {
+  return (
+    availableVoices.find(v => v.lang && v.lang.toLowerCase().startsWith("th")) ||
+    availableVoices.find(v => v.lang && v.lang.toLowerCase().includes("th")) ||
+    availableVoices[0] ||
+    null
+  );
+}
+
 function speakThai() {
   if (!("speechSynthesis" in window)) return;
 
@@ -216,16 +225,12 @@ function speakThai() {
   utterance.rate = 0.95;
   utterance.pitch = 1;
 
-  const thaiVoice =
-    availableVoices.find(v => v.lang && v.lang.toLowerCase().startsWith("th")) ||
-    availableVoices.find(v => v.lang && v.lang.toLowerCase().includes("th")) ||
-    null;
+  const voice = getThaiVoice();
+  if (voice) utterance.voice = voice;
 
-  if (thaiVoice) {
-    utterance.voice = thaiVoice;
-  }
-
-  window.speechSynthesis.speak(utterance);
+  setTimeout(() => {
+    window.speechSynthesis.speak(utterance);
+  }, 100);
 }
 
 timeButton.addEventListener("click", speakThai);
@@ -233,7 +238,11 @@ speakBtn.addEventListener("click", speakThai);
 
 refreshVoices();
 if ("speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+  if ("onvoiceschanged" in window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = refreshVoices;
+  } else {
+    window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+  }
 }
 
 updateClock();
