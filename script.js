@@ -86,8 +86,8 @@ function thaiPhoneticNumber(n) {
     5: "ha",
     6: "hok",
     7: "jet",
-    8: "baet",
-    9: "gao",
+    8: "paet",
+    9: "kao",
     10: "sip",
     11: "sip-et",
     12: "sip-song",
@@ -96,8 +96,8 @@ function thaiPhoneticNumber(n) {
     15: "sip-ha",
     16: "sip-hok",
     17: "sip-jet",
-    18: "sip-baet",
-    19: "sip-gao",
+    18: "sip-paet",
+    19: "sip-kao",
     20: "yi-sip",
     21: "yi-sip-et",
     22: "yi-sip-song",
@@ -106,38 +106,38 @@ function thaiPhoneticNumber(n) {
     25: "yi-sip-ha",
     26: "yi-sip-hok",
     27: "yi-sip-jet",
-    28: "yi-sip-baet",
-    29: "yi-sip-gao",
+    28: "yi-sip-paet",
+    29: "yi-sip-kao",
     30: "sam-sip",
-    31: "sam-sip-et",
-    32: "sam-sip-song",
-    33: "sam-sip-sam",
-    34: "sam-sip-si",
-    35: "sam-sip-ha",
-    36: "sam-sip-hok",
-    37: "sam-sip-jet",
-    38: "sam-sip-baet",
-    39: "sam-sip-gao",
+    31: "sam-et",
+    32: "sam-song",
+    33: "sam-sam",
+    34: "sam-si",
+    35: "sam-ha",
+    36: "sam-hok",
+    37: "sam-jet",
+    38: "sam-paet",
+    39: "sam-kao",
     40: "si-sip",
-    41: "si-sip-et",
-    42: "si-sip-song",
-    43: "si-sip-sam",
-    44: "si-sip-si",
-    45: "si-sip-ha",
-    46: "si-sip-hok",
-    47: "si-sip-jet",
-    48: "si-sip-baet",
-    49: "si-sip-gao",
+    41: "si-et",
+    42: "si-song",
+    43: "si-sam",
+    44: "si-si",
+    45: "si-ha",
+    46: "si-hok",
+    47: "si-jet",
+    48: "si-paet",
+    49: "si-kao",
     50: "ha-sip",
-    51: "ha-sip-et",
-    52: "ha-sip-song",
-    53: "ha-sip-sam",
-    54: "ha-sip-si",
-    55: "ha-sip-ha",
-    56: "ha-sip-hok",
-    57: "ha-sip-jet",
-    58: "ha-sip-baet",
-    59: "ha-sip-gao"
+    51: "ha-et",
+    52: "ha-song",
+    53: "ha-sam",
+    54: "ha-si",
+    55: "ha-ha",
+    56: "ha-hok",
+    57: "ha-jet",
+    58: "ha-paet",
+    59: "ha-kao"
   };
   return map[n] || String(n);
 }
@@ -168,7 +168,7 @@ function thaiHourText(hour) {
     21: ["สามทุ่ม", "sam thum"],
     22: ["สี่ทุ่ม", "si thum"],
     23: ["ห้าทุ่ม", "ha thum"]
-};
+  };
   return map[hour] || ["", ""];
 }
 
@@ -177,6 +177,13 @@ function buildSpokenThai(hour, minute) {
   if (minute === 0) return thaiHour;
   if (minute === 30) return `${thaiHour} ครึ่ง`;
   return `${thaiHour} ${thaiNumberText(minute)}นาที`;
+}
+
+function buildSpokenPhonetic(hour, minute) {
+  const [, phoneticHour] = thaiHourText(hour);
+  if (minute === 0) return phoneticHour;
+  if (minute === 30) return `${phoneticHour} khrueng`;
+  return `${phoneticHour} ${thaiPhoneticNumber(minute)} naathi`;
 }
 
 function updateClock() {
@@ -199,42 +206,17 @@ function refreshVoices() {
   availableVoices = window.speechSynthesis.getVoices();
 }
 
-function getThaiVoice() {
-  return (
-    availableVoices.find(v => v.lang && v.lang.toLowerCase().startsWith("th")) ||
-    availableVoices.find(v => v.lang && v.lang.toLowerCase().includes("th")) ||
-    availableVoices[0] ||
-    null
-  );
-}
-
-function speakThai() {
-  if (!("speechSynthesis" in window)) return;
-
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const text = buildSpokenThai(h, m);
-
-  if (!text) return;
-
+function speakText(text, lang, voice = null) {
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);
+  utterance.text = text;
+  utterance.lang = lang;
   utterance.rate = 0.95;
   utterance.pitch = 1;
   utterance.volume = 1;
-  utterance.lang = "th-TH";
 
-  const thaiVoice = availableVoices.find(
-    v => v.lang && v.lang.toLowerCase().startsWith("th")
-  );
-
-  if (thaiVoice) {
-    utterance.voice = thaiVoice;
-  } else {
-    utterance.voice = null;
-  }
+  if (voice) utterance.voice = voice;
 
   utterance.onerror = (e) => {
     console.log("Speech error:", e.error);
@@ -243,6 +225,27 @@ function speakThai() {
   setTimeout(() => {
     window.speechSynthesis.speak(utterance);
   }, 100);
+}
+
+function speakThai() {
+  if (!("speechSynthesis" in window)) return;
+
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+
+  const thaiText = buildSpokenThai(h, m);
+  const phoneticText = buildSpokenPhonetic(h, m);
+
+  const thaiVoice = availableVoices.find(
+    v => v.lang && v.lang.toLowerCase().startsWith("th")
+  );
+
+  if (thaiVoice) {
+    speakText(thaiText, "th-TH", thaiVoice);
+  } else {
+    speakText(phoneticText, "en-US");
+  }
 }
 
 timeButton.addEventListener("click", speakThai);
