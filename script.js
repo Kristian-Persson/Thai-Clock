@@ -221,12 +221,24 @@ function speakThai() {
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "th-TH";
   utterance.rate = 0.95;
   utterance.pitch = 1;
+  utterance.volume = 1;
+  utterance.lang = "th-TH";
 
-  const voice = getThaiVoice();
-  if (voice) utterance.voice = voice;
+  const thaiVoice = availableVoices.find(
+    v => v.lang && v.lang.toLowerCase().startsWith("th")
+  );
+
+  if (thaiVoice) {
+    utterance.voice = thaiVoice;
+  } else {
+    utterance.voice = null;
+  }
+
+  utterance.onerror = (e) => {
+    console.log("Speech error:", e.error);
+  };
 
   setTimeout(() => {
     window.speechSynthesis.speak(utterance);
